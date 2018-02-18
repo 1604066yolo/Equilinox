@@ -40,6 +40,7 @@ public class Renderer {
 		GL30.glBindVertexArray(rmodel.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
+		GL20.glEnableVertexAttribArray(2);
 		
 		Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(), entity.getRotx(), entity.getRoty(), entity.getRotz(), entity.getScale());
 		shader.loadTransformationMatrix(transformationMatrix);
@@ -49,6 +50,7 @@ public class Renderer {
 		GL11.glDrawElements(GL11.GL_TRIANGLES, rmodel.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
+		GL20.glDisableVertexAttribArray(2);
 		GL30.glBindVertexArray(0);
 	}
 	
