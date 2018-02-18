@@ -13,6 +13,7 @@ import main.renderEngine.Loader;
 import main.renderEngine.MasterRenderer;
 import main.renderEngine.OBJLoader;
 import main.textures.ModelTexture;
+import terrain.Terrain;
 
 public class MainGameLoop {
 
@@ -31,6 +32,8 @@ public class MainGameLoop {
 		
 		Light sun = new Light(new Vector3f(3000, 2000, 3000), new Vector3f(1,1,1));
 		
+		Terrain terrain = new Terrain(0, 0, loader, new ModelTexture(loader.loadTexture("grass")));
+		
 		Camera camera = new Camera();
 		
 		MasterRenderer renderer = new MasterRenderer();
@@ -38,6 +41,7 @@ public class MainGameLoop {
 			entity.increaseRotation(0, 1, 0);
 			camera.move();
 			
+			renderer.processTerrain(terrain);
 			renderer.processEntity(entity);
 			
 			renderer.render(sun, camera);
