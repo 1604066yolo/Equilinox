@@ -78,7 +78,7 @@ public abstract class ShaderProgram {
 		matBuffer.flip();
 		GL20.glUniformMatrix4(location, false, matBuffer);
 	}
-	
+		
 	private static int loadShader(String file, int type) {
 		StringBuilder shaderSource = new StringBuilder();
 		try {
