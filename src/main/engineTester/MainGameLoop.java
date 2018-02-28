@@ -12,14 +12,16 @@ import org.lwjgl.util.vector.Vector3f;
 import main.entities.Camera;
 import main.entities.Entity;
 import main.entities.Light;
+import main.entities.Player;
 import main.models.RawModel;
 import main.models.TexturedModel;
 import main.renderEngine.DisplayManager;
 import main.renderEngine.Loader;
 import main.renderEngine.MasterRenderer;
-import main.renderEngine.OBJLoader;
 import main.terrain.Terrain;
 import main.textures.ModelTexture;
+import main.textures.TerrainTexture;
+import main.textures.TerrainTexturePack;
 import objConverter.ModelData;
 import objConverter.OBJFileLoader;
 
@@ -34,8 +36,21 @@ public class MainGameLoop {
 	public static void main(String args[]) {
 
 		DisplayManager.createDisplay();
+		
+		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
+		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
+		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("pinkFlowers"));
+		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
+		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
+		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
+		Terrain terrain = new Terrain(0, 0, loader, texturePack, blendMap);
+		
+		//----------------------
 
-		// -------------------------------------------------------------------------------------
+		Player player = new Player(createModel("stanfordBunny", "white", "player"), new Vector3f(400, 3, 400), 0, 90, 0, .3f);
+		Camera camera = new Camera(player);
+		
+		// ---------------------
 
 		createModel("tree", "tree", "tree");
 		createModel("lowPolyTree", "lowPolyTree", "lpTree");
@@ -44,30 +59,32 @@ public class MainGameLoop {
 		grassTexturedModel.getTexture().setHasTransparency(true);
 		grassTexturedModel.getTexture().setUseFakeLighting(true);
 		
+		TexturedModel flowerTexturedModel = createModel("grassModel", "flower", "flower");
+		flowerTexturedModel.getTexture().setHasTransparency(true);
+		flowerTexturedModel.getTexture().setUseFakeLighting(true);
+		
 		
 		TexturedModel fernTexturedModel = createModel("fern", "fern", "fern");
 		fernTexturedModel.getTexture().setHasTransparency(true);
 
 		// -------------
 
+		entities.add(player);
 		for (int i = 0; i < 500; i++) {
 			addEntityAtRandomPos("tree", 5);
 			addEntityAtRandomPos("lpTree", .5f);
 			addEntityAtRandomPos("fern", .5f);
 			addEntityAtRandomPos("grass", 1);
+			addEntityAtRandomPos("flower", 1);
 		}
-
-		texturedModels.clear();
-
 		// ------------------------------------------------------------------------------------------
 
 		Light sun = new Light(new Vector3f(3000, 2000, 3000), new Vector3f(1, 1, 1));
-		Terrain terrain = new Terrain(0, 0, loader, new ModelTexture(loader.loadTexture("grass")));
-		Camera camera = new Camera(new Vector3f(0, 3, 800));
 
 		MasterRenderer renderer = new MasterRenderer();
 		while (!Display.isCloseRequested()) {
 			camera.move();
+			player.move();
 
 			renderer.processTerrain(terrain);
 			for (Entity entity : entities)
@@ -79,6 +96,8 @@ public class MainGameLoop {
 
 		renderer.cleanUp();
 		loader.cleanUp();
+		texturedModels.clear();
+		entities.clear();
 		DisplayManager.closeDisplay();
 
 	}
