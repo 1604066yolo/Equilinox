@@ -57,6 +57,7 @@ public class MainGameLoop {
 
 		createModel("tree", "tree", "tree");
 		createModel("lowPolyTree", "lowPolyTree", "lpTree");
+		createModel("lamp", "lamp", "lamp");
 
 		TexturedModel grassTexturedModel = createModel("grassModel", "grassTexture", "grass");
 		grassTexturedModel.getTexture().setHasTransparency(true);
@@ -80,6 +81,11 @@ public class MainGameLoop {
 			addEntityAtRandomPos("grass", 1, terrain);
 			addEntityAtRandomPos("flower", 1, terrain);
 		}
+		
+		addEntityAtPos(new Vector3f(350, 0, 350), "lamp", 1, terrain);
+		addEntityAtPos(new Vector3f(400, 0, 400), "lamp", 1, terrain);
+		addEntityAtPos(new Vector3f(450, 0, 450), "lamp", 1, terrain);
+		
 		// -----------------------
 
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
@@ -88,17 +94,24 @@ public class MainGameLoop {
 		
 		//------------------------
 		
-		Light sun = new Light(new Vector3f(3000, 2000, 3000), new Vector3f(1, 1, 1));
-
-		MasterRenderer renderer = new MasterRenderer();
+		List<Light> lights = new ArrayList<Light>();
+		Light sun = new Light(new Vector3f(3000, 2000, 3000), new Vector3f(.4f, .4f, .4f));
+		lights.add(sun);
+		lights.add(new Light(new Vector3f(400, 15, 400), new Vector3f(2, 0, 0), new Vector3f(1, .01f, .002f)));
+		lights.add(new Light(new Vector3f(350, 10, 350), new Vector3f(0, 2, 2), new Vector3f(1, .01f, .002f)));
+		lights.add(new Light(new Vector3f(450, 10, 450), new Vector3f(2, 2, 0), new Vector3f(1, .01f, .002f)));
+		
+		
+		MasterRenderer renderer = new MasterRenderer(loader);
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
+		
 		while (!Display.isCloseRequested()) {
 			camera.move();
 			player.move(terrain);
 			renderer.processTerrain(terrain);
 			for (Entity entity : entities)
 				renderer.processEntity(entity);
-			renderer.render(sun, camera);
+			renderer.render(lights, camera);
 			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();
 		}
@@ -147,6 +160,11 @@ public class MainGameLoop {
 		float zPos = random.nextFloat() * 800;
 		Vector3f pos = new Vector3f(xPos, terrain.getHeightOfTerrain(xPos, zPos), zPos);
 		entities.add(new Entity(texturedModels.get(key), texIndex, pos, 0, 0, 0, scale));
+	}
+	
+	public static void addEntityAtPos(Vector3f pos, String key, float scale, Terrain terrain) {
+		Vector3f position = new Vector3f(pos.x, terrain.getHeightOfTerrain(pos.x, pos.z) + pos.y, pos.z);
+		entities.add(new Entity(texturedModels.get(key), position, 0, 0, 0, scale));
 	}
 
 }
