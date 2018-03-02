@@ -1,6 +1,7 @@
 package main.shaders;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import main.entities.Camera;
@@ -21,6 +22,8 @@ public class StaticShader extends ShaderProgram {
 	private int location_reflectivity;
 	private int location_useFakeLighting;
 	private int location_skyColor;
+	private int location_numberOfRows;
+	private int location_offset;
 	
 	public StaticShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -44,10 +47,20 @@ public class StaticShader extends ShaderProgram {
 		location_reflectivity = super.getUniformLocation("reflectivity");
 		location_useFakeLighting = super.getUniformLocation("useFakeLighting");
 		location_skyColor = super.getUniformLocation("skyColor");
+		location_numberOfRows = super.getUniformLocation("numberOfRows");
+		location_offset = super.getUniformLocation("offset");
+	}
+	
+	public void loadNumberOfRows(int numberOfRows) {
+		super.loadFloat(location_numberOfRows, numberOfRows);
+	}
+	
+	public void loadOffset(float x, float y) {
+		super.loadVector2(location_offset, new Vector2f(x, y));
 	}
 	
 	public void loadSkyColor(float r, float g, float b) {
-		super.loadVector(location_skyColor, new Vector3f(r, g, b));
+		super.loadVector3(location_skyColor, new Vector3f(r, g, b));
 	}
 	
 	public void loadFakeLightingVariable(boolean useFakeLighting) {
@@ -73,8 +86,8 @@ public class StaticShader extends ShaderProgram {
 	}
 	
 	public void loadLight(Light light) {
-		super.loadVector(location_lightPosition, light.getPosition());
-		super.loadVector(location_lightColor, light.getColor());
+		super.loadVector3(location_lightPosition, light.getPosition());
+		super.loadVector3(location_lightColor, light.getColor());
 	}
 	
 }
